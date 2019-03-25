@@ -2,6 +2,24 @@ from itertools import combinations
 
 class Eclat(object):
 
+	"""
+		Custom library for Eclat Algorithm, how to use this library:
+		1. Define your own object
+			object = Eclat(dataset=(pd.read_csv('Sample data.csv', header=None), pair=2)
+		2. Get transactions
+			object.getTransactions()
+		3. Get unique item set
+			object.getUniqueItems()
+		4. Get scores will return 3 of list, there is combinations, scores and confidence
+			object.getScores()
+		5. You can use DataFrame 
+			df = pd.DataFrame(object.getScores()).T
+			df.columns = ['Pairs', 'Scores', 'Confidence']
+			df.sort_values('Scores', ascending=False).head(10)
+
+		Get your own research ^_^
+	"""
+
 	def __init__(self, dataset, pair):
 		self.dataset = dataset
 		self.transactions = list()
