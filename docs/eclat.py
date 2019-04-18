@@ -22,15 +22,16 @@ class Eclat(object):
 
 	def __init__(self, dataset, pair):
 		self.drugs = dataset.Drugs.tolist()
-		self.dataWithoutLabels = dataset.drop(["Drugs"], axis)
+		self.dataWithoutLabels = dataset.drop(["Drugs"], axis=1)
 		self.dataset = dataset
 		self.transactions = list()
+		self.columnsDate = list()
 		self.items = list()
 		self.uniqueItems = list()
 		self.pair = pair
-		self.newData = none
+		self.newData = None
 
-	def getdata(self):
+	def getCleanData(self):
 		transaction = list()
 		columnsDate = list()
 		for i in self.dataWithoutLabels:
@@ -42,23 +43,29 @@ class Eclat(object):
 				else:
 					values.append(0)
 			transaction.append(values)
-		pd.DataFrame(transaction)
+		return transaction
 
-	def giveNameColumn(self):
-		dfTransaction = pd.DataFrame(transaction)
-		dfTransaction.columns = drugsColumn
+	def getDataWithoutLabel(self):
+		return self.dataWithoutLabels
 
-	def changeDate(self):
-		newData = pd.DataFrame(transaction).T
+	def getDrugs(self):
+		return self.drugs
 
 	def getTransactions(self):
-		for i in range(0, len(self.dataset)):
-			self.transactions.append([str(self.dataset.values[i,j]) for j in range(0, len(self.dataset.columns))])
-		return self.transactions
+		for i in self.dataWithoutLabels:
+			self.columnsDate.append(i)
+			values = list()
+			for x, value in enumerate(self.dataWithoutLabels[i]):
+				if value is not 0:
+					values.append(self.drugs[x])
+				else:
+					values.append("nan")
+			self.transactions.append(values)
 
 	def getUniqueItems(self):
+		self.getTransactions()
 		for i in range(0, len(self.transactions)):
-		self.items.extend(self.transactions[i])
+			self.items.extend(self.transactions[i])
 		self.uniqueItems = list(set(self.items))
 		self.uniqueItems.remove("nan")
 		return self.uniqueItems
