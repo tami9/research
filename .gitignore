@@ -8,3 +8,4 @@ app/db/dataset-pre.xlsx
 app/db/datasets.xlsx
 migrations/
 .ipynb_checkpoints/
+.pyc
