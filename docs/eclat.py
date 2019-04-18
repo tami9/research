@@ -21,11 +21,35 @@ class Eclat(object):
 	"""
 
 	def __init__(self, dataset, pair):
+		self.drugs = dataset.Drugs.tolist()
+		self.dataWithoutLabels = dataset.drop(["Drugs"], axis)
 		self.dataset = dataset
 		self.transactions = list()
 		self.items = list()
 		self.uniqueItems = list()
 		self.pair = pair
+		self.newData = none
+
+	def getdata(self):
+		transaction = list()
+		columnsDate = list()
+		for i in self.dataWithoutLabels:
+			columnsDate.append(i)
+			values = list()
+			for value in self.dataWithoutLabels[i]:
+				if value is not 0:
+					values.append(i)
+				else:
+					values.append(0)
+			transaction.append(values)
+		pd.DataFrame(transaction)
+
+	def giveNameColumn(self):
+		dfTransaction = pd.DataFrame(transaction)
+		dfTransaction.columns = drugsColumn
+
+	def changeDate(self):
+		newData = pd.DataFrame(transaction).T
 
 	def getTransactions(self):
 		for i in range(0, len(self.dataset)):
@@ -34,7 +58,7 @@ class Eclat(object):
 
 	def getUniqueItems(self):
 		for i in range(0, len(self.transactions)):
-			self.items.extend(self.transactions[i])
+		self.items.extend(self.transactions[i])
 		self.uniqueItems = list(set(self.items))
 		self.uniqueItems.remove("nan")
 		return self.uniqueItems
