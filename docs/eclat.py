@@ -69,15 +69,19 @@ class Eclat(object):
 		scores = list()
 		confidence = list()
 		lift = list()
+		rules = list()
 		comb = [x for x in combinations(self.uniqueItems, self.pair)]
 		for i in comb:
-			conditions = []
+			conditions = list()
+			rule = list()
 			for item in i:
 				conditions.append('("{}") in x'.format(item))
+				rule.append("{}".format(item))
+			rules.append('Jika {}'.format(rule[0]) + ' maka ' + ', '.join(rule[1:]))
 			cond_code = ('[x for x in self.transactions if ' + ' and '.join(conditions) + ']')
 			conf_codeA = ('[x for x in self.transactions if ("{}") in x]'.format(i[0]))
 			conf_codeB = ('[x for x in self.transactions if ("{}") in x]'.format(i[-1]))
 			scores.append((len(eval(cond_code))/len(self.transactions))*100)
 			confidence.append((len(eval(cond_code))/len(eval(conf_codeB)))*100)
 			lift.append((len(eval(conf_codeA)) * len(eval(conf_codeB))) / ((len(eval(conf_codeB)) / len(self.transactions)) * 100))
-		return [comb, scores, confidence, lift]
+		return [rules, scores, confidence, lift]
