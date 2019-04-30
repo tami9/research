@@ -1,24 +1,20 @@
 from itertools import combinations
 
+
 class Eclat(object):
-
 	"""
-		Custom library for Eclat Algorithm, how to use this library:
-		1. Define your own object
-			object = Eclat(dataset=(pd.read_csv('Sample data.csv', header=None), pair=2)
-		2. Get transactions
-			object.getTransactions()
-		3. Get unique item set
-			object.getUniqueItems()
-		4. Get scores will return 3 of list, there is combinations, scores and confidence
-			object.getScores()
-		5. You can use DataFrame 
-			df = pd.DataFrame(object.getScores()).T
-			df.columns = ['Pairs', 'Scores', 'Confidence']
-			df.sort_values('Scores', ascending=False).head(10)
+        Custom library for Eclat Algorithm, how to use this library:
+        1. Define your own object
+            object = Eclat(dataset=(pd.read_csv('Sample data.csv', header=None), pair=2)
+        2. Get scores will return 3 of list, there is combinations, scores and confidence
+            object.getScores()
+        3. You can use DataFrame
+            df = pd.DataFrame(object.getScores()).T
+            df.columns = ['Pairs', 'Scores', 'Confidence']
+            df.sort_values('Scores', ascending=False).head(10)
 
-		Get your own research ^_^
-	"""
+        Get your own research ^_^
+    """
 
 	def __init__(self, dataset, pair):
 		self.drugs = dataset.Drugs.tolist()
@@ -59,27 +55,29 @@ class Eclat(object):
 				if value is not 0:
 					values.append(self.drugs[x])
 				else:
-					values.append("nan")
+					values.append("0")
 			self.transactions.append(values)
 
 	def getUniqueItems(self):
-		self.getTransactions()
 		for i in range(0, len(self.transactions)):
 			self.items.extend(self.transactions[i])
 		self.uniqueItems = list(set(self.items))
-		self.uniqueItems.remove("nan")
+		self.uniqueItems.remove("0")
 		return self.uniqueItems
 
 	def getScores(self):
-		scores = []
-		confidence = []
-		comb = [x for x in combinations(self.getUniqueItems(), self.pair)]
+		scores = list()
+		confidence = list()
+		lift = list()
+		comb = [x for x in combinations(self.uniqueItems, self.pair)]
 		for i in comb:
 			conditions = []
 			for item in i:
 				conditions.append('("{}") in x'.format(item))
-			cond_code = ('[x for x in self.transactions if ' + ' and '.join(conditions)+']')
-			conf_code = ('[x for x in self.transactions if ("{}") in x]'.format(i[0]))
-			scores.append(len(eval(cond_code))/len(self.dataset))
-			confidence.append(len(eval(cond_code))/len(eval(conf_code)))
-		return [comb, scores, confidence]
+			cond_code = ('[x for x in self.transactions if ' + ' and '.join(conditions) + ']')
+			conf_codeA = ('[x for x in self.transactions if ("{}") in x]'.format(i[0]))
+			conf_codeB = ('[x for x in self.transactions if ("{}") in x]'.format(i[-1]))
+			scores.append((len(eval(cond_code))/len(self.transactions))*100)
+			confidence.append((len(eval(cond_code))/len(eval(conf_codeB)))*100)
+			lift.append((len(eval(conf_codeA)) * len(eval(conf_codeB))) / ((len(eval(conf_codeB)) / len(self.transactions)) * 100))
+		return [comb, scores, confidence, lift]
